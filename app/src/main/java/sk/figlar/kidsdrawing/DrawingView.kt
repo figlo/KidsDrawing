@@ -15,6 +15,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var mBrushSize: Float = 0f
     private var mColor = Color.BLACK
     private lateinit var mCanvas: Canvas
+    private val mPaths: MutableList<CustomPath> = emptyList<CustomPath>().toMutableList()
 
     init {
         setUpDrawing()
@@ -46,6 +47,13 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
             mDrawPaint.color = mDrawPath.color
             canvas.drawPath(mDrawPath, mDrawPaint)
         }
+        for (path in mPaths) {
+            if (!path.isEmpty) {
+                mDrawPaint.strokeWidth = path.brushThickness
+                mDrawPaint.color = path.color
+                canvas.drawPath(path, mDrawPaint)
+            }
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -72,6 +80,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 }
             }
             MotionEvent.ACTION_UP -> {
+                mPaths += mDrawPath
                 mDrawPath = CustomPath(mColor, mBrushSize)
             }
             else -> return false
