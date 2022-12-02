@@ -8,13 +8,13 @@ import android.view.View
 
 class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
-    private var mDrawPath: CustomPath? = null
-    private var mCanvasBitmap: Bitmap? = null
-    private var mDrawPaint: Paint? = null
-    private var mCanvasPaint: Paint? = null
+    private lateinit var mDrawPath: CustomPath
+    private lateinit var mCanvasBitmap: Bitmap
+    private lateinit var mDrawPaint: Paint
+    private lateinit var mCanvasPaint: Paint
     private var mBrushSize: Float = 0f
     private var mColor = Color.BLACK
-    private var mCanvas: Canvas? = null
+    private lateinit var mCanvas: Canvas
 
     init {
         setUpDrawing()
@@ -22,10 +22,10 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private fun setUpDrawing() {
         mDrawPaint = Paint()
-        mDrawPaint!!.color = mColor
-        mDrawPaint!!.style = Paint.Style.STROKE
-        mDrawPaint!!.strokeJoin = Paint.Join.ROUND
-        mDrawPaint!!.strokeCap = Paint.Cap.ROUND
+        mDrawPaint.color = mColor
+        mDrawPaint.style = Paint.Style.STROKE
+        mDrawPaint.strokeJoin = Paint.Join.ROUND
+        mDrawPaint.strokeCap = Paint.Cap.ROUND
         mDrawPath = CustomPath(mColor, mBrushSize)
         mCanvasPaint = Paint(Paint.DITHER_FLAG)
         mBrushSize = 20f
@@ -34,17 +34,17 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mCanvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        mCanvas = Canvas(mCanvasBitmap!!)
+        mCanvas = Canvas(mCanvasBitmap)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawBitmap(mCanvasBitmap!!, 0f, 0f, mCanvasPaint)
+        canvas.drawBitmap(mCanvasBitmap, 0f, 0f, mCanvasPaint)
 
-        if (!mDrawPath!!.isEmpty) {
-            mDrawPaint!!.strokeWidth = mDrawPath!!.brushThickness
-            mDrawPaint!!.color = mDrawPath!!.color
-            canvas.drawPath(mDrawPath!!, mDrawPaint!!)
+        if (!mDrawPath.isEmpty) {
+            mDrawPaint.strokeWidth = mDrawPath.brushThickness
+            mDrawPaint.color = mDrawPath.color
+            canvas.drawPath(mDrawPath, mDrawPaint)
         }
     }
 
@@ -54,20 +54,20 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
-                mDrawPath!!.color = mColor
-                mDrawPath!!.brushThickness = mBrushSize
+                mDrawPath.color = mColor
+                mDrawPath.brushThickness = mBrushSize
 
-                mDrawPath!!.reset()
+                mDrawPath.reset()
                 if (touchX != null) {
                     if (touchY != null) {
-                        mDrawPath!!.moveTo(touchX, touchY)
+                        mDrawPath.moveTo(touchX, touchY)
                     }
                 }
             }
             MotionEvent.ACTION_MOVE -> {
                 if (touchX != null) {
                     if (touchY != null) {
-                        mDrawPath!!.lineTo(touchX, touchY)
+                        mDrawPath.lineTo(touchX, touchY)
                     }
                 }
             }
