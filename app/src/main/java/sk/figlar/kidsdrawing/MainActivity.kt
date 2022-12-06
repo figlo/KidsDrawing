@@ -1,17 +1,28 @@
 package sk.figlar.kidsdrawing
 
 import android.app.Dialog
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.get
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawingView: DrawingView
+    private lateinit var mImageButtonCurrentPaint: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val linearLayoutPaintColors = findViewById<LinearLayout>(R.id.llPaintColors)
+
+        mImageButtonCurrentPaint = linearLayoutPaintColors[1] as ImageButton
+        mImageButtonCurrentPaint.setImageDrawable(
+            ContextCompat.getDrawable(this, R.drawable.pallet_pressed)
+        )
 
         drawingView = findViewById(R.id.drawingView)
         drawingView.setBrushSize(20f)
