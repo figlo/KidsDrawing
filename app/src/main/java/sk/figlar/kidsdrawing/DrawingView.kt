@@ -42,17 +42,17 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         super.onDraw(canvas)
         canvas.drawBitmap(mCanvasBitmap, 0f, 0f, mCanvasPaint)
 
-        if (!mDrawPath.isEmpty) {
-            mDrawPaint.strokeWidth = mDrawPath.brushThickness
-            mDrawPaint.color = mDrawPath.color
-            canvas.drawPath(mDrawPath, mDrawPaint)
-        }
         for (path in mPaths) {
             if (!path.isEmpty) {
                 mDrawPaint.strokeWidth = path.brushThickness
                 mDrawPaint.color = path.color
                 canvas.drawPath(path, mDrawPaint)
             }
+        }
+        if (!mDrawPath.isEmpty) {
+            mDrawPaint.strokeWidth = mDrawPath.brushThickness
+            mDrawPaint.color = mDrawPath.color
+            canvas.drawPath(mDrawPath, mDrawPaint)
         }
     }
 
@@ -99,7 +99,10 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         mDrawPaint.strokeWidth = mBrushSize
     }
 
-    internal inner class CustomPath(var color: Int, var brushThickness: Float) : Path() {
-
+    fun setColor(newColor: String) {
+        mColor = Color.parseColor(newColor)
+        mDrawPaint.color = mColor
     }
+
+    internal inner class CustomPath(var color: Int, var brushThickness: Float) : Path()
 }
