@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@id/ibBrush"
+        app:layout_constraintBottom_toTopOf="@id/llActionButtons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/flDrawingViewContainer">
@@ -124,19 +124,35 @@
             android:src="@drawable/pallet_normal"
             android:tag="@color/white" />
 
-
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/ibBrush"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="5dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_brush"
+    <LinearLayout
+        android:id="@+id/llActionButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/llPaintColors" />
+        app:layout_constraintTop_toBottomOf="@id/llPaintColors">
+
+        <ImageButton
+            android:id="@+id/ibGallery"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_gallery" />
+
+        <ImageButton
+            android:id="@+id/ibBrush"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_brush" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
