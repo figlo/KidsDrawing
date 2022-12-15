@@ -51,14 +51,14 @@ class MainActivity : AppCompatActivity() {
                 val permissionName = it.key
                 val isGranted = it.value
 
-                if (isGranted) {
-                    val pickIntent = Intent(
-                        Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    )
-                    openGalleryLauncher.launch(pickIntent)
-                } else {
-                    if (permissionName == Manifest.permission.READ_EXTERNAL_STORAGE) {
+                if (permissionName == Manifest.permission.READ_EXTERNAL_STORAGE) {
+                    if (isGranted) {
+                        val pickIntent = Intent(
+                            Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        )
+                        openGalleryLauncher.launch(pickIntent)
+                    } else {
                         Toast.makeText(
                             this@MainActivity,
                             "Oops you just denied the permission.",
@@ -273,8 +273,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun shareImage(result: String) {
-        MediaScannerConnection.scanFile(this, arrayOf(result), null) {
-            path, uri ->
+        MediaScannerConnection.scanFile(this, arrayOf(result), null) { path, uri ->
             val shareIntent = Intent()
             shareIntent.action = Intent.ACTION_SEND
             shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
