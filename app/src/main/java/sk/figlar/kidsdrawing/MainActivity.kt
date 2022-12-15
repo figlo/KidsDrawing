@@ -4,12 +4,14 @@ import android.Manifest
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -20,6 +22,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -86,6 +95,16 @@ class MainActivity : AppCompatActivity() {
         ibGallery.setOnClickListener {
             requestStoragePermission()
         }
+
+        val ibSave: ImageButton = findViewById(R.id.ibSave)
+        ibSave.setOnClickListener {
+            if (isReadStorageAllowed()) {
+                lifecycleScope.launch {
+                    val flDrawingView: FrameLayout = findViewById(R.id.flDrawingViewContainer)
+                    saveBitmapFile(getBitmapFromView(flDrawingView))
+                }
+            }
+        }
     }
 
     private fun showBrushSizeChooserDialog() {
@@ -127,7 +146,15 @@ class MainActivity : AppCompatActivity() {
             )
             mImageButtonCurrentPaint = view
         }
+    }
 
+    private fun isReadStorageAllowed(): Boolean {
+        val result = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+
+        return result == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestStoragePermission() {
@@ -143,7 +170,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestPermission.launch(
                 arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             )
         }
@@ -162,7 +190,7 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
-    private fun getBitmapFromView(view: View) : Bitmap {
+    private fun getBitmapFromView(view: View): Bitmap {
         val returnedBitmap = Bitmap.createBitmap(
             view.width,
             view.height,
@@ -179,5 +207,51 @@ class MainActivity : AppCompatActivity() {
         view.draw(canvas)
 
         return returnedBitmap
+    }
+
+    private suspend fun saveBitmapFile(mBitmap: Bitmap?): String {
+        var result = ""
+        withContext(Dispatchers.IO) {
+            if (mBitmap != null) {
+                try {
+                    val bytes = ByteArrayOutputStream()
+                    mBitmap.compress(Bitmap.CompressFormat.PNG, 90, bytes)
+
+                    val file = File(
+                        externalCacheDir?.absoluteFile.toString() +
+                                File.separator +
+                                "KidsDrawingApp" +
+                                System.currentTimeMillis() / 1000 +
+                                ".png"
+                    )
+
+                    val fileOutputStream = FileOutputStream(file)
+                    fileOutputStream.write(bytes.toByteArray())
+                    fileOutputStream.close()
+
+                    result = file.absolutePath
+
+                    runOnUiThread {
+                        if (result.isNotEmpty()) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "File saved successfully: $result",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Something went wrong when saving the file.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        return result
     }
 }
